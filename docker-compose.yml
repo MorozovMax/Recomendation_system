@@ -1,0 +1,32 @@
+version: '3'
+services:
+  elasticvue:
+    image: cars10/elasticvue
+    container_name: elasticvue
+    ports:
+      - "8080:8080"
+    networks:
+      - internal
+  elasticsearch:
+    image: elasticsearch:8.8.0
+    container_name: elastic
+    ports:
+      - 9200:9200
+    environment:
+      - "http.cors.allow-origin=http://localhost:8080"
+      - "http.cors.enabled=true"
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    volumes:
+      - ./elastic:/elasticsearch
+    networks:
+      - internal
+  mongodb:
+    image: mongo:6-jammy
+    ports:
+      - '27017:27017'
+    volumes:
+      - ./mongodb/data:/data/db
+networks:
+    internal:
+        driver: bridge
