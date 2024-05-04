@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search</title>
+    <style>
+        body {
+            display: flex;
+            //justify-content: center;
+            //align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            flex-direction: column; /* Добавляем выравнивание контейнеров вертикально */
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .search-container {
+            margin-bottom: 20px;
+        }
+
+        .search-input{
+            padding: 10px;
+            width: 400px;
+        }
+
+        .keywords-title, .trends-title {
+            margin-top: 20px;
+        }
+
+        .keywords-container, .trends-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .keywords-container .keyword, .trends-container .keyword {
+            margin: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .matrix {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Поисковая строка -->
+        <div class="search-container">
+            <h1>Search Articles</h1>
+            <div id="searchForm">
+                <input type="text" id="query" class="search-input" placeholder="Search...">
+                <button id="searchBtn">Search</button>
+            </div>
+        </div>
+
+        <!-- Ключевые слова -->
+        <h2 class="keywords-title">Keywords</h2>
+        <div class="keywords-container">
+            {% for keyword in keywords_list %}
+                {% set group_color = group_colors[keyword.topic_id] %}
+                {% for key, value in keyword.topic.items() %}
+                    <span class="keyword" style="background-color: {{ group_color }}">{{ key }}</span>
+                {% endfor %}
+            {% endfor %}
+        </div>
+
+        <!-- Тренды -->
+        <h3 class="trends-title">Trends</h3>
+        <div class="trends-container">
+            {% for keyword in trends_list %}
+                {% set group_color = group_colors[keyword.topic_id] %}
+                {% for key, value in keyword.topic.items() %}
+                    <span class="keyword" style="background-color: {{ group_color }}">{{ key }}</span>
+                {% endfor %}
+            {% endfor %}
+        </div>
+
+        <!-- Результаты поиска -->
+        <div id="results"></div>
+    </div>
+
+    <script>
+    // Определение функции search(page)
+    function search(page) {
+        var query = $('#query').val(); // Получаем значение из поля поиска
+
+        // Отправляем запрос на сервер
+        $.ajax({
+            url: '/search?page=' + page, // Передаем номер страницы в запросе
+            type: 'POST',
+            dataType: 'html',
+            data: {query: query}, // Передаем значение поискового запроса
+            success: function(data) {
+                // Отображаем результаты поиска на странице
+                $('#results').html(data);
+            }
+        });
+    };
+
+    // При загрузке документа
+    $(document).ready(function() {
+        // При клике на кнопку поиска
+        $('#searchBtn').click(function() {
+            var query = $('#query').val(); // Получаем значение из поля поиска
+
+            // Отправляем запрос на сервер
+            $.ajax({
+                url: '/search',
+                type: 'POST',
+                dataType: 'html',
+                data: {query: query}, // Передаем значение поискового запроса
+                success: function(data) {
+                    // Отображаем результаты поиска на странице
+                    $('#results').html(data);
+                }
+            });
+        });
+
+        // При клике на кнопку "Previous"
+        $(document).on('click', '#prevPage', function() {
+            var page = parseInt($('span').text().split(' ')[1]); // Получаем номер текущей страницы
+            if (page > 1) {
+                page -= 1; // Уменьшаем номер страницы на 1
+                search(page); // Выполняем поиск с новым номером страницы
+            }
+        });
+
+        // При клике на кнопку "Next"
+        $(document).on('click', '#nextPage', function() {
+            var page = parseInt($('span').text().split(' ')[1]); // Получаем номер текущей страницы
+            var max_page = parseInt($('#maxPage').text());
+            if (page < max_page)
+                page += 1; // Увеличиваем номер страницы на 1
+                search(page); // Выполняем поиск с новым номером страницы
+        });
+
+        // При клике на ключевое слово
+        $('.keyword').click(function() {
+            var keyword = $(this).text(); // Получаем текст ключевого слова
+            $('#query').val(keyword); // Заполняем поле поиска этим ключевым словом
+            $('#searchBtn').click(); // Выполняем поисковый запрос
+        });
+    });
+</script>
+
+</body>
+</html>

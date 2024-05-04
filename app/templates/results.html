@@ -1,0 +1,48 @@
+<h1>Search Results</h1>
+<style>
+    .card{
+        padding: 10px;
+        margin-bottom: 10px;
+        min-height: 100px;
+        max-height: 100px;
+        overflow: hidden;
+        width: 1000px;
+        overflow-x: auto;
+    }
+</style>>
+
+<ul>
+    {% for result in results %}
+        <li class="card">
+            <div class="title">
+                <a href="{{ result._source.link }}">{{ result._source.title }}</a>
+            </div>
+            <div class="snippet">
+                {{ result._source.snippet }}
+            </div>
+            <div class="authors">
+                Authors: {{ result._source.authors }}
+            </div>
+        </li>
+    {% endfor %}
+</ul>
+
+<div class="pagination">
+    <div id="maxPage" style="display: none;">{{ max_page }}</div>
+    <button id="prevPage">Previous</button>
+    <span>Page {{ page }}</span>
+    <span>of</span>
+    <span>{{ max_page }}</span>
+    <button id="nextPage">Next</button>
+</div>
+
+<script>
+    // При загрузке страницы
+    document.addEventListener('DOMContentLoaded', function() {
+        // Получаем значение из localStorage, если оно там есть
+        var query = localStorage.getItem('query');
+        if (query) {
+            document.getElementById('query').value = query;
+        }
+    });
+</script>
