@@ -41,7 +41,10 @@ def parse_springer_magazine():
                 authors = item.select_one('[data-test="authors"]').text.strip()
             except:
                 authors = None
-
+            try:
+                snippet = item.select_one('.app-listing__intro p').text.strip()
+            except:
+                snippet = None
             try:
                 abstract_response = requests.get(link)
             except:
@@ -61,7 +64,8 @@ def parse_springer_magazine():
 
             results.append({
                 'title': title,
-                'link': link,
+                'snippet': snippet,
+                'link': params['site'] + link,
                 'abstract': abstract,
                 'authors': authors,
                 'created': created

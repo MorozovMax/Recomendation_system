@@ -134,5 +134,5 @@ def find_num_topics(data):
 #es = Elasticsearch("http://localhost:9200")
 #data = Elastic_search_API.get_all_data(es, "neuroinformatics_data")
 #preprocessed_data = preprocessing(data)
-#model_train(preprocessed_data)
+#odel_train(preprocessed_data)
 

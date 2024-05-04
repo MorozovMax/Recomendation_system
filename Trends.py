@@ -91,7 +91,6 @@ def find_year_trends(client):
             avg += elem1["topic"][f"{key1}"]
         keyw_counts += len(elem1["topic"].keys())
     avg = avg / keyw_counts
-    print(result)
     res = []
 
     for elem in result:
@@ -105,7 +104,7 @@ def find_year_trends(client):
         })
 
 
-    pprint.pprint(res)
+    return res
 
 client = pymongo.MongoClient()
 find_year_trends(client)
